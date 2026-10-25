@@ -1,3 +1,8 @@
+import arrowIcon from "../assets/arrow-right-up.svg";
+import bundleSugarcane from "../assets/about-sugarcane-bundle.webp";
+import biokraftMaterial from "../assets/about-material-photo.webp";
+import problemIllustration from "../assets/about-problem-illustration.svg";
+
 const stats = [
   {
     value: "100M+",
@@ -50,13 +55,14 @@ const values = [
 ];
 
 function Arrow() {
-  return <span className="arrow">{"->"}</span>;
+  return <img className="arrow-icon" src={arrowIcon} alt="" />;
 }
 
 export default function AboutPage() {
   return (
     <>
       <section className="about-page-hero">
+        <img className="about-page-hero-image" src={biokraftMaterial} alt="" />
         <div className="about-page-hero-copy">
           <h1>
             Turning waste into <em>worth</em>
@@ -114,24 +120,26 @@ export default function AboutPage() {
             Explore our products <Arrow />
           </a>
         </div>
-        <div className="about-page-story-art" aria-hidden="true">
-          <span>BioKraft</span>
-          <strong>
-            From waste
-            <br />
-            to worth
-          </strong>
+        <div className="about-page-story-art">
+          <img
+            className="about-page-story-image"
+            src={bundleSugarcane}
+            alt="BioKraft compostable tableware made from sugarcane bagasse"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </section>
 
       <section className="about-page-problem">
-        <div className="about-page-problem-art" aria-hidden="true">
-          <span>100%</span>
-          <strong>
-            Plant-based
-            <br />
-            packaging
-          </strong>
+        <div className="about-page-problem-art">
+          <img
+            className="about-page-problem-image"
+            src={problemIllustration}
+            alt="Sugarcane bagasse alongside BioKraft compostable plates, bowls and food containers"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
         <div>
           <p className="about-page-eyebrow">The problem we solve</p>

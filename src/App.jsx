@@ -1,24 +1,52 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import './App.css'
-import AboutPage from './pages/About'
-import ContactPage from './pages/Contact'
-import ProductsPage from './pages/Products'
+import biokraftLogo from './assets/biokraft-logo.svg'
+import homeHeroImage from './assets/home-hero.webp'
+import bundleSugarcane from './assets/about-sugarcane-bundle.webp'
+import biokraftMaterial from './assets/about-material-photo.webp'
+import benefitSugarcaneIcon from './assets/benefit-sugarcane-bagasse.svg'
+import benefitCompostableIcon from './assets/benefit-compostable.svg'
+import benefitSafeIcon from './assets/benefit-safe-reliable.svg'
+import benefitCarbonIcon from './assets/benefit-carbon-footprint.svg'
+import industryFoodIcon from './assets/industry-food-beverage.svg'
+import industryHealthcareIcon from './assets/industry-healthcare.svg'
+import industryCaterersIcon from './assets/industry-caterers.svg'
+import industryEducationIcon from './assets/industry-education.svg'
+import industryRetailIcon from './assets/industry-retail.svg'
+import industryFmcgIcon from './assets/industry-fmcg-brands.svg'
+import industryDistributorsIcon from './assets/industry-distributors.svg'
+import monthlyProductionIcon from './assets/glance-monthly-production.svg'
+import privateLabelingIcon from './assets/glance-private-labeling.svg'
+import bulkFulfilmentIcon from './assets/glance-bulk-fulfilment.svg'
+import factoryPricingIcon from './assets/glance-factory-pricing.svg'
+import productPlatesImage from './assets/product-plates.svg'
+import productBowlsImage from './assets/product-bowls.svg'
+import productTraysImage from './assets/product-compartment-trays.svg'
+import productCupsImage from './assets/product-cups-and-boxes.svg'
+import faqImageLower from './assets/faq-image-lower.webp'
+import faqImageUpper from './assets/faq-image-upper.webp'
+import arrowRightUpIcon from './assets/arrow-right-up.svg'
+import buttonArrowCircle from './assets/button-arrow-circle.svg'
+
+const AboutPage = lazy(() => import('./pages/About'))
+const ContactPage = lazy(() => import('./pages/Contact'))
+const ProductsPage = lazy(() => import('./pages/Products'))
 
 const benefits = [
-  { icon: 'Y', label: '100% Sugarcane Bagasse' },
-  { icon: 'R', label: 'Bio-Degradable & Compostable' },
-  { icon: 'S', label: 'Safe & Reliable' },
-  { icon: 'CO2', label: 'Reduce carbon footprint' },
+  { icon: benefitSugarcaneIcon, label: '100% Sugarcane Bagasse' },
+  { icon: benefitCompostableIcon, label: 'Bio-Degradable & Compostable' },
+  { icon: benefitSafeIcon, label: 'Safe & Reliable' },
+  { icon: benefitCarbonIcon, label: 'Reduce carbon footprint' },
 ]
 
 const industries = [
-  { icon: '*', name: 'Food & Beverage' },
-  { icon: '+', name: 'Healthcare Institutions' },
-  { icon: '-', name: 'Caterers' },
-  { icon: '[]', name: 'Education' },
-  { icon: 'U', name: 'Retail' },
-  { icon: 'C', name: 'FMCG Brands' },
-  { icon: 'D', name: 'Distributors' },
+  { icon: industryFoodIcon, name: 'Food & Beverage' },
+  { icon: industryHealthcareIcon, name: 'Healthcare Institutions' },
+  { icon: industryCaterersIcon, name: 'Caterers' },
+  { icon: industryEducationIcon, name: 'Education' },
+  { icon: industryRetailIcon, name: 'Retail' },
+  { icon: industryFmcgIcon, name: 'FMCG Brands' },
+  { icon: industryDistributorsIcon, name: 'Distributors' },
 ]
 
 const claims = [
@@ -44,30 +72,30 @@ const claimBacks = [
 ]
 
 const glanceFacts = [
-  { value: '2.5M+', label: 'Plates produced monthly', icon: '▱' },
-  { value: 'Private Labelling', label: 'Your brand on every product', icon: '□' },
-  { value: 'Factory direct pricing', label: 'No middlemen markups', icon: '▣' },
-  { value: 'Bulk order fulfilment', label: 'Built for volume, not samples', icon: '◇' },
+  { value: '2.5M+', label: 'Plates produced monthly', icon: monthlyProductionIcon },
+  { value: 'Private Labelling', label: 'Your brand on every product', icon: privateLabelingIcon },
+  { value: 'Factory direct pricing', label: 'No middlemen markups', icon: factoryPricingIcon },
+  { value: 'Bulk order fulfilment', label: 'Built for volume, not samples', icon: bulkFulfilmentIcon },
 ]
 
 const products = [
   {
-    icon: 'O',
+    image: productPlatesImage,
     name: 'Bagasse Plates',
     description: 'From bite-sized servings to full-course meals, BioKraft’s range of sugarcane bagasse plates is designed to suit every food service application.',
   },
   {
-    icon: 'U',
+    image: productBowlsImage,
     name: 'Bagasse Bowls',
     description: 'BioKraft’s range of biodegradable bowls is crafted to accommodate everything from sauces and side dishes to soups, curries and desserts.',
   },
   {
-    icon: 'Q',
+    image: productTraysImage,
     name: 'Bagasse Compartment Trays',
     description: 'BioKraft’s compartment plates and meal trays keep multiple food items neatly separated while maintaining an attractive presentation.',
   },
   {
-    icon: 'B',
+    image: productCupsImage,
     name: 'Bagasse Cups & Boxes',
     description: 'BioKraft’s range of cups and clamshell boxes is perfect for beverages, desserts, packaged meals and baked goods.',
   },
@@ -86,12 +114,15 @@ const faqs = [
 const pageHashes = ['#about-page', '#products-page', '#contact-page']
 
 function Arrow() {
-  return <span className="arrow">{'->'}</span>
+  return <img className="arrow-icon" src={arrowRightUpIcon} alt="" />
 }
 
 function Button({ children, variant = 'dark', href = '#contact' }) {
   const className = variant === 'gold' ? 'gold-button' : variant === 'contact' ? 'contact-button' : 'dark-button'
-  return <a className={className} href={href}>{children}<Arrow /></a>
+  const trailingIcon = variant === 'contact'
+    ? <img className="arrow-icon" src={buttonArrowCircle} alt="" />
+    : <Arrow />
+  return <a className={className} href={href}>{children}{trailingIcon}</a>
 }
 
 function SectionHeading({ label, children }) {
@@ -100,14 +131,26 @@ function SectionHeading({ label, children }) {
 
 function Header({ page }) {
   const activePage = page || '#top'
+  const [menuOpen, setMenuOpen] = useState(false)
 
   return <header className="header">
-    <a className="logo" href="#top" aria-label="BioKraft home"><span>B</span><small>BIOKRAFT</small></a>
-    <nav aria-label="Main navigation">
+    <a className="logo" href="#top" aria-label="BioKraft home"><img src={biokraftLogo} alt="" /></a>
+    <button
+      className="menu-toggle"
+      type="button"
+      aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+      aria-expanded={menuOpen}
+      aria-controls="main-navigation"
+      onClick={() => setMenuOpen((open) => !open)}
+    >
+      <span />
+      <span />
+      <span />
+    </button>
+    <nav id="main-navigation" className={menuOpen ? 'open' : ''} aria-label="Main navigation" onClick={() => setMenuOpen(false)}>
       <a className={activePage === '#top' ? 'active' : ''} href="#top">Home</a>
       <a className={activePage === '#about-page' ? 'active' : ''} href="#about-page">About</a>
       <a className={activePage === '#products-page' ? 'active' : ''} href="#products-page">Products</a>
-      <a className={activePage === '#certifications' ? 'active' : ''} href="#certifications">Certifications</a>
       <Button variant="contact" href="#contact-page">Contact Us</Button>
     </nav>
   </header>
@@ -115,34 +158,37 @@ function Header({ page }) {
 
 function Hero() {
   return <section className="hero" id="top">
+    <img className="hero-image" src={homeHeroImage} alt="" fetchPriority="high" />
     <div className="hero-overlay">
       <p className="script">Sustainable</p>
       <h1>Alternative to Plastic<br />Food <em>Packaging</em></h1>
       <p>Premium food packaging made from reclaimed<br />sugarcane fibre.</p>
       <Button variant="gold" href="#products-page">Explore our products</Button>
     </div>
-    <div className="hero-shape" />
   </section>
 }
 
 function Benefits() {
   return <section className="benefits" aria-label="Product benefits">
-    {benefits.map(({ icon, label }) => <div className="benefit" key={label}><span className="benefit-icon">{icon}</span><span>{label}</span></div>)}
+    {benefits.map(({ icon, label }) => <div className="benefit" key={label}><img className="benefit-icon" src={icon} alt="" /><span>{label}</span></div>)}
   </section>
 }
 
 function Industries() {
-  return <section className="industries" id="certifications">
+  return <section className="industries">
     <p className="kicker">Industries we serve</p>
     <div className="industry-grid">
-      {industries.map(({ icon, name }) => <div className="industry" key={name}><span className="industry-icon">{icon}</span><span>{name}</span></div>)}
+      {industries.map(({ icon, name }) => <div className="industry" key={name}><img className="industry-icon" src={icon} alt="" /><span>{name}</span></div>)}
     </div>
   </section>
 }
 
 function About() {
   return <section className="about" id="about">
-    <div className="about-visual"><div className="field-image" /><div className="pack-image" /></div>
+    <div className="about-visual">
+      <img className="field-image" src={biokraftMaterial} alt="Biodegradable packaging made from sugarcane material" loading="lazy" decoding="async" />
+      <img className="pack-image" src={bundleSugarcane} alt="Bundle of sugarcane" loading="lazy" decoding="async" />
+    </div>
     <div className="about-copy">
       <p className="kicker">About</p>
       <h2>Powered by Nature<br />Driven by Innovation</h2>
@@ -157,7 +203,7 @@ function AtAGlance() {
     <SectionHeading label="BioKraft at a glance" />
     <div className="glance-grid">
       {glanceFacts.map(({ value, label, icon }, index) => <article className={index === 1 || index === 3 ? 'glance-card featured' : 'glance-card'} key={label}>
-        <span className="glance-icon">{icon}</span><strong>{value}</strong><span>{label}</span>
+        <img className="glance-icon" src={icon} alt="" /><strong>{value}</strong><span>{label}</span>
       </article>)}
     </div>
   </section>
@@ -166,7 +212,7 @@ function AtAGlance() {
 function WhyChooseUs() {
   return <section className="why">
     <div className="section-top"><div><SectionHeading label="Why choose Biokraft?"><h2>Built on substance, not just claims</h2><p>BioKraft transforms agricultural waste into premium, sustainable food packaging that meets the demands of modern food service.</p></SectionHeading></div><Button href="#products-page">View all products</Button></div>
-    <div className="claim-grid">{claims.map((claim, index) => <div className="claim-card" key={claim}><div className="claim-inner"><div className={index === 2 || index === 5 ? 'claim claim-front active' : 'claim claim-front'}>{claim}</div><div className="claim claim-back">{claimBacks[index]}</div></div></div>)}</div>
+    <div className="claim-grid">{claims.map((claim, index) => <div className="claim-card" key={claim}><div className="claim-inner"><div className={index === 2 || index === 5 ? 'claim claim-front active' : 'claim claim-front'}><span>{claim}</span></div><div className="claim claim-back"><span>{claimBacks[index]}</span></div></div></div>)}</div>
   </section>
 }
 
@@ -177,27 +223,33 @@ function SwitchCallout() {
 function Products() {
   return <section className="products" id="products">
     <SectionHeading label="Sustainable product range"><h2>Four ranges. Every use case.</h2></SectionHeading>
-    <div className="product-list">{products.map(({ icon, name, description }) => <article key={name}><span className="product-icon">{icon}</span><h3>{name}</h3><p>{description}</p></article>)}</div>
+    <div className="product-list">{products.map(({ image, name, description }) => <article key={name}><img className="product-icon" src={image} alt="" /><h3>{name}</h3><p>{description}</p></article>)}</div>
   </section>
 }
 
 function FAQ() {
   return <section className="faq">
     <div><p className="kicker">Frequently asked questions</p>{faqs.map((question) => <details key={question}><summary>{question}<span>^</span></summary><p>Our products are designed for safe, responsible food service use.</p></details>)}</div>
-    <div className="faq-images"><div className="faq-image one" /><div className="faq-image two" /></div>
+    <div className="faq-images">
+      <img className="faq-image one" src={faqImageUpper} alt="" loading="lazy" decoding="async" />
+      <img className="faq-image two" src={faqImageLower} alt="" loading="lazy" decoding="async" />
+    </div>
   </section>
 }
 
 function Footer() {
   const columns = [
-    { title: 'Navigate', links: [['Home', '#top'], ['About', '#about-page'], ['Products', '#products-page'], ['Certifications', '#certifications'], ['Contact', '#contact-page']] },
-    { title: 'Products', links: [['Plates', '#products'], ['Bowls', '#products'], ['Compartment trays', '#products'], ['Cups & Clamshell box', '#products']] },
+    { title: 'Navigate', links: ['Home', 'About', 'Products', 'Contact'] },
+    { title: 'Products', links: ['Plates', 'Bowls', 'Compartment trays', 'Cups & Clamshell box'] },
   ]
 
   return <footer id="contact">
-    <a className="logo" href="#top"><span>B</span><small>BIOKRAFT</small></a>
-    {columns.map(({ title, links }) => <div key={title}><h4>{title}</h4>{links.map(([label, href]) => <a href={href} key={label}>{label}</a>)}</div>)}
-    <div><h4>Contact</h4><p>temaindustries.ltd@gmail.com</p><p>+91 8939099779</p><p>U T enim ad minim veniam, quis nostrud exercitation - 100001</p></div>
+    <div className="footer-brand">
+      <a className="logo" href="#top" aria-label="BioKraft home"><img src={biokraftLogo} alt="" /></a>
+      <p>Tema Industries Pvt. Ltd.</p>
+    </div>
+    {columns.map(({ title, links }) => <div className="footer-column" key={title}><h4>{title}</h4>{links.map((label) => <span key={label}>{label}</span>)}</div>)}
+    <div className="footer-contact"><h4>Contact</h4><p>temaindustries.ltd@gmail.com</p><p>+91 8939099779</p><p>Kotdwar, Uttarakhand</p></div>
   </footer>
 }
 
@@ -216,7 +268,7 @@ function App() {
 
   const pageContent = page === '#about-page' ? <AboutPage /> : page === '#products-page' ? <ProductsPage /> : page === '#contact-page' ? <ContactPage /> : <><Hero /><Benefits /><Industries /><About /><WhyChooseUs /><SwitchCallout /><Products /><AtAGlance /><FAQ /></>
 
-  return <main><Header page={page} />{pageContent}<Footer /></main>
+  return <main><Header page={page} /><Suspense fallback={null}>{pageContent}</Suspense><Footer /></main>
 }
 
 export default App

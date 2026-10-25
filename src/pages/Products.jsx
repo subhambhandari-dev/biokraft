@@ -1,4 +1,7 @@
 import { useState } from "react";
+import arrowIcon from "../assets/arrow-right-up.svg";
+import microwaveIcon from "../assets/microwave-safe-icon.svg";
+import freezerIcon from "../assets/freezer-safe-icon.svg";
 
 const categories = [
   "All",
@@ -95,8 +98,89 @@ const productItems = [
   },
 ];
 
+async function downloadCatalogue() {
+  const { jsPDF } = await import("jspdf");
+  const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const itemsPerPage = 6;
+  const pageCount = Math.ceil(productItems.length / itemsPerPage);
+
+  for (let pageIndex = 0; pageIndex < pageCount; pageIndex += 1) {
+    if (pageIndex > 0) pdf.addPage();
+
+    pdf.setFillColor(0, 61, 43);
+    pdf.rect(0, 0, pageWidth, 48, "F");
+    pdf.setFillColor(199, 146, 43);
+    pdf.rect(0, 48, pageWidth, 1.5, "F");
+
+    pdf.setTextColor(227, 184, 92);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(8);
+    pdf.text("BIOKRAFT  |  PRODUCT CATALOGUE", 15, 12);
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(19);
+    pdf.text("Sugarcane tableware", 15, 22);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+    pdf.text("Premium, sustainable food-service essentials made from sugarcane bagasse.", 15, 29);
+    pdf.setFontSize(8);
+    pdf.setTextColor(220, 235, 226);
+    pdf.text("100% bagasse  |  Biodegradable & compostable  |  Food safe  |  Microwave & freezer safe", 15, 39);
+
+    const pageItems = productItems.slice(
+      pageIndex * itemsPerPage,
+      (pageIndex + 1) * itemsPerPage,
+    );
+
+    pageItems.forEach((product, itemIndex) => {
+      const cardY = 57 + itemIndex * 38;
+      pdf.setFillColor(243, 248, 245);
+      pdf.setDrawColor(213, 223, 217);
+      pdf.roundedRect(15, cardY, pageWidth - 30, 35, 3, 3, "FD");
+
+      pdf.setTextColor(40, 125, 88);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(8);
+      pdf.text(product.category.toUpperCase(), 21, cardY + 8);
+
+      pdf.setTextColor(2, 54, 37);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(12);
+      pdf.text(product.name.replace(/[“”]/g, '"'), 21, cardY + 16);
+
+      const details = [
+        { label: "PACK SIZE", value: product.pack, x: 21 },
+        { label: "CASE QUANTITY", value: product.cases, x: 79 },
+        { label: "DIMENSIONS", value: "Please enquire", x: 137 },
+      ];
+
+      details.forEach(({ label, value, x }) => {
+        pdf.setTextColor(104, 128, 116);
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(7);
+        pdf.text(label, x, cardY + 24);
+        pdf.setTextColor(7, 85, 59);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(8);
+        pdf.text(value, x, cardY + 30);
+      });
+    });
+
+    pdf.setDrawColor(213, 223, 217);
+    pdf.line(15, pageHeight - 13, pageWidth - 15, pageHeight - 13);
+    pdf.setTextColor(88, 116, 102);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(8);
+    pdf.text("For dimensions, bulk quotes and enquiries: temaindustries.ltd@gmail.com", 15, pageHeight - 7);
+    pdf.text(`${pageIndex + 1} / ${pageCount}`, pageWidth - 15, pageHeight - 7, { align: "right" });
+  }
+
+  pdf.save("biokraft-product-catalogue.pdf");
+}
+
 function Arrow() {
-  return <span className="arrow">{"->"}</span>;
+  return <img className="arrow-icon" src={arrowIcon} alt="" />;
 }
 
 function ProductShape({ type }) {
@@ -112,6 +196,10 @@ function ProductCard({ product }) {
     <article className="catalogue-card">
       <div className="catalogue-visual">
         <span className="catalogue-badge">100% Bagasse</span>
+        <div className="catalogue-feature-icons" role="img" aria-label="Microwave and freezer safe">
+          <img src={microwaveIcon} alt="" />
+          <img src={freezerIcon} alt="" />
+        </div>
         <ProductShape type={product.shape} />
       </div>
       <div className="catalogue-card-body">
@@ -120,7 +208,7 @@ function ProductCard({ product }) {
         <dl>
           <div>
             <dt>Dimension</dt>
-            <dd>00 x 00 mm</dd>
+            <dd>Please enquire</dd>
           </div>
           <div>
             <dt>Pack size</dt>
@@ -167,9 +255,20 @@ export default function ProductsPage() {
           </div>
         </div>
         <div className="products-page-hero-actions">
-          <a className="products-outline-button" href="#contact">
+          <button
+            type="button"
+            className="products-outline-button"
+            onClick={async () => {
+              try {
+                await downloadCatalogue();
+              } catch (error) {
+                console.error("Unable to generate the product catalogue PDF.", error);
+                window.alert("The catalogue could not be downloaded. Please try again.");
+              }
+            }}
+          >
             Download catalogue <Arrow />
-          </a>
+          </button>
           <a className="gold-button" href="#contact-page">
             Build a quote
           </a>
