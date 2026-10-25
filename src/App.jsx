@@ -27,6 +27,7 @@ import faqImageLower from './assets/faq-image-lower.webp'
 import faqImageUpper from './assets/faq-image-upper.webp'
 import arrowRightUpIcon from './assets/arrow-right-up.svg'
 import buttonArrowCircle from './assets/button-arrow-circle.svg'
+import faqChevronIcon from './assets/faq-chevron.svg'
 
 const AboutPage = lazy(() => import('./pages/About'))
 const ContactPage = lazy(() => import('./pages/Contact'))
@@ -102,13 +103,34 @@ const products = [
 ]
 
 const faqs = [
-  'What is bagasse tableware?',
-  'Is your tableware biodegradable and compostable?',
-  'How long does it take to decompose?',
-  'Is tableware suitable for microwaves and freezers?',
-  'Are your products oil and water resistant?',
-  'Are the products food-safe?',
-  'Do you offer custom branding and OEM manufacturing?',
+  {
+    question: 'What is bagasse tableware?',
+    answer: 'Bagasse tableware is made from sugarcane fiber left after juice extraction. It is a renewable and eco-friendly alternative to plastic and foam products.',
+  },
+  {
+    question: 'Is your tableware biodegradable and compostable?',
+    answer: 'Yes. Every BioKraft product is made from 100% natural sugarcane fibre with no plastic lining, so it breaks down fully under composting conditions and leaves no microplastic residue.',
+  },
+  {
+    question: 'How long does it take to decompose?',
+    answer: 'Under standard composting conditions, BioKraft products typically break down within 60–90 days, compared to the hundreds of years plastic alternatives take in landfill.',
+  },
+  {
+    question: 'Is tableware suitable for microwaves and freezers?',
+    answer: 'Yes. BioKraft products are designed to withstand both heating and freezing conditions. They can be used for reheating food in microwaves and are safe for cold foods and freezers, making them suitable for a wide range of food service.',
+  },
+  {
+    question: 'Are your products oil and water resistant?',
+    answer: 'BioKraft tableware is engineered to resist oil and moisture for the duration of typical food service use, without leaking or losing structural integrity.',
+  },
+  {
+    question: 'Are the products food-safe?',
+    answer: 'Absolutely. All products are manufactured in a controlled, hygienic environment and are safe for direct contact with both hot and cold food.',
+  },
+  {
+    question: 'Do you offer custom branding and OEM manufacturing?',
+    answer: 'Yes, BioKraft offers private labelling and OEM manufacturing for businesses looking to bring branded sustainable packaging to their customers. Get in touch to discuss your requirements.',
+  },
 ]
 
 const pageHashes = ['#about-page', '#products-page', '#contact-page']
@@ -229,7 +251,7 @@ function Products() {
 
 function FAQ() {
   return <section className="faq">
-    <div><p className="kicker">Frequently asked questions</p>{faqs.map((question) => <details key={question}><summary>{question}<span>^</span></summary><p>Our products are designed for safe, responsible food service use.</p></details>)}</div>
+    <div><p className="kicker">Frequently asked questions</p>{faqs.map(({ question, answer }) => <details key={question}><summary>{question}<img src={faqChevronIcon} alt="" /></summary><p>{answer}</p></details>)}</div>
     <div className="faq-images">
       <img className="faq-image one" src={faqImageUpper} alt="" loading="lazy" decoding="async" />
       <img className="faq-image two" src={faqImageLower} alt="" loading="lazy" decoding="async" />

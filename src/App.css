@@ -452,8 +452,15 @@ h2 em {
   display: flex;
   justify-content: space-between;
 }
-.faq summary span {
-  font-size: 25px;
+.faq summary img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  transition: transform 180ms ease;
+}
+.faq details[open] summary img {
+  transform: rotate(180deg);
 }
 .faq details p {
   font-size: 15px;
