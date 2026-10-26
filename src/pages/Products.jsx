@@ -1,7 +1,9 @@
 import { useState } from "react";
-import arrowIcon from "../assets/arrow-right-up.svg";
-import microwaveIcon from "../assets/microwave-safe-icon.svg";
-import freezerIcon from "../assets/freezer-safe-icon.svg";
+import {
+  arrowRightUpIcon as arrowIcon,
+  freezerIcon,
+  microwaveIcon,
+} from "../assets";
 
 const categories = [
   "All",

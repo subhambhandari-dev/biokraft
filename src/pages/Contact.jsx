@@ -1,11 +1,13 @@
 import { useState } from "react";
-import phoneIcon from "../assets/phone-contact-icon.svg";
-import emailIcon from "../assets/email-contact-icon.svg";
-import officeIcon from "../assets/registered-office-icon.svg";
-import whatsappIcon from "../assets/whatsapp-icon.svg";
-import instagramIcon from "../assets/instagram-icon.svg";
-import privacyIcon from "../assets/privacy-lock-icon.svg";
-import sendIcon from "../assets/send-message-icon.svg";
+import {
+  emailIcon,
+  instagramIcon,
+  officeIcon,
+  phoneIcon,
+  privacyIcon,
+  sendIcon,
+  whatsappIcon,
+} from "../assets";
 
 export default function ContactPage() {
   const [submissionState, setSubmissionState] = useState("idle");

@@ -1,7 +1,9 @@
-import arrowIcon from "../assets/arrow-right-up.svg";
-import bundleSugarcane from "../assets/about-sugarcane-bundle.webp";
-import biokraftMaterial from "../assets/about-material-photo.webp";
-import problemIllustration from "../assets/about-problem-illustration.svg";
+import {
+  aboutProblemIllustration as problemIllustration,
+  arrowRightUpIcon as arrowIcon,
+  biokraftMaterial,
+  bundleSugarcane,
+} from "../assets";
 
 const stats = [
   {

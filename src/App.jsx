@@ -1,33 +1,35 @@
 import { Component, lazy, Suspense, useEffect, useRef, useState } from 'react'
 import './App.css'
-import biokraftLogo from './assets/biokraft-logo.svg'
-import homeHeroImage from './assets/home-hero.webp'
-import bundleSugarcane from './assets/about-sugarcane-bundle.webp'
-import biokraftMaterial from './assets/about-material-photo.webp'
-import benefitSugarcaneIcon from './assets/benefit-sugarcane-bagasse.svg'
-import benefitCompostableIcon from './assets/benefit-compostable.svg'
-import benefitSafeIcon from './assets/benefit-safe-reliable.svg'
-import benefitCarbonIcon from './assets/benefit-carbon-footprint.svg'
-import industryFoodIcon from './assets/industry-food-beverage.svg'
-import industryHealthcareIcon from './assets/industry-healthcare.svg'
-import industryCaterersIcon from './assets/industry-caterers.svg'
-import industryEducationIcon from './assets/industry-education.svg'
-import industryRetailIcon from './assets/industry-retail.svg'
-import industryFmcgIcon from './assets/industry-fmcg-brands.svg'
-import industryDistributorsIcon from './assets/industry-distributors.svg'
-import monthlyProductionIcon from './assets/glance-monthly-production.svg'
-import privateLabelingIcon from './assets/glance-private-labeling.svg'
-import bulkFulfilmentIcon from './assets/glance-bulk-fulfilment.svg'
-import factoryPricingIcon from './assets/glance-factory-pricing.svg'
-import productPlatesImage from './assets/product-plates.svg'
-import productBowlsImage from './assets/product-bowls.svg'
-import productTraysImage from './assets/product-compartment-trays.svg'
-import productCupsImage from './assets/product-cups-and-boxes.svg'
-import faqImageLower from './assets/faq-image-lower.webp'
-import faqImageUpper from './assets/faq-image-upper.webp'
-import arrowRightUpIcon from './assets/arrow-right-up.svg'
-import buttonArrowCircle from './assets/button-arrow-circle.svg'
-import faqChevronIcon from './assets/faq-chevron.svg'
+import {
+  arrowRightUpIcon,
+  benefitCarbonIcon,
+  benefitCompostableIcon,
+  benefitSafeIcon,
+  benefitSugarcaneIcon,
+  biokraftLogo,
+  biokraftMaterial,
+  bulkFulfilmentIcon,
+  bundleSugarcane,
+  buttonArrowCircle,
+  factoryPricingIcon,
+  faqChevronIcon,
+  faqImageLower,
+  faqImageUpper,
+  homeHeroImage,
+  industryCaterersIcon,
+  industryDistributorsIcon,
+  industryEducationIcon,
+  industryFmcgIcon,
+  industryFoodIcon,
+  industryHealthcareIcon,
+  industryRetailIcon,
+  monthlyProductionIcon,
+  privateLabelingIcon,
+  productBowlsImage,
+  productCupsImage,
+  productPlatesImage,
+  productTraysImage,
+} from './assets'
 
 const AboutPage = lazy(() => import('./pages/About'))
 const ContactPage = lazy(() => import('./pages/Contact'))
@@ -187,9 +189,20 @@ function SectionHeading({ label, children }) {
 function Header({ page }) {
   const activePage = page || '#top'
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const menuToggleRef = useRef(null)
   const drawerCloseRef = useRef(null)
   const navigationRef = useRef(null)
+
+  useEffect(() => {
+    function handleScroll() {
+      setIsScrolled(window.scrollY > 40)
+    }
+
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     if (!menuOpen) return undefined
@@ -238,7 +251,7 @@ function Header({ page }) {
     }
   }, [menuOpen])
 
-  return <header className="header">
+  return <header className={isScrolled ? 'header scrolled' : 'header'}>
     <a className="logo" href="#top" aria-label="BioKraft home"><img src={biokraftLogo} alt="" /></a>
     <button
       ref={menuToggleRef}

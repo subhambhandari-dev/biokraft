@@ -55,7 +55,7 @@ main {
   overflow: hidden;
 }
 .header {
-  height: 142px;
+  height: 112px;
   padding: 0 5.5vw;
   display: flex;
   align-items: center;
@@ -66,8 +66,8 @@ main {
 .logo {
   text-decoration: none;
   display: block;
-  width: 60px;
-  height: 86px;
+  width: 52px;
+  height: 74px;
 }
 .logo img {
   display: block;
@@ -79,6 +79,7 @@ main {
   align-items: center;
   gap: 34px;
 }
+.drawer-heading,
 .drawer-close,
 .nav-backdrop {
   display: none;
@@ -560,7 +561,7 @@ footer .footer-contact p {
 }
 @media (max-width: 760px) {
   .header {
-    height: 100px;
+    height: 84px;
     padding: 0 6vw;
   }
   .menu-toggle {

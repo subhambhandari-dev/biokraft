@@ -18,6 +18,9 @@ npm run build
 
 The production build is written to `dist/`.
 
+Static SVG and image imports are centralized in `src/assets/index.js`. Import
+assets by name from `src/assets` to keep file paths in one place.
+
 ## Contact form
 
 The contact form is handled by Netlify Forms. The form detector in `index.html`
