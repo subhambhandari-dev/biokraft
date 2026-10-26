@@ -8,11 +8,34 @@ import privacyIcon from "../assets/privacy-lock-icon.svg";
 import sendIcon from "../assets/send-message-icon.svg";
 
 export default function ContactPage() {
-  const [submitted, setSubmitted] = useState(false);
+  const [submissionState, setSubmissionState] = useState("idle");
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    setSubmitted(true);
+    if (submissionState === "submitting") return;
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    formData.set("form-name", "contact");
+    setSubmissionState("submitting");
+
+    try {
+      const response = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData).toString(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Contact form submission failed with status ${response.status}.`);
+      }
+
+      form.reset();
+      setSubmissionState("success");
+    } catch (error) {
+      console.error("Unable to submit the contact form.", error);
+      setSubmissionState("error");
+    }
   }
 
   return (
@@ -31,7 +54,7 @@ export default function ContactPage() {
           <p>Whether you need a bulk quote, product samples or have a question about our materials, reach out directly or use the form and we&apos;ll respond within 24 hours.</p>
           <div className="contact-detail">
             <img className="contact-detail-icon" src={phoneIcon} alt="" />
-            <div className="contact-detail-copy"><strong>Phone</strong><a href="tel:+918939097779">+91 89397549799</a></div>
+            <div className="contact-detail-copy"><strong>Phone</strong><a href="tel:+918939099779">+91 8939099779</a></div>
           </div>
           <div className="contact-detail">
             <img className="contact-detail-icon" src={emailIcon} alt="" />
@@ -39,7 +62,7 @@ export default function ContactPage() {
           </div>
           <div className="contact-detail">
             <img className="contact-detail-icon" src={officeIcon} alt="" />
-            <div className="contact-detail-copy"><strong>Registered office</strong><span>Tema Industries Pvt. Ltd.<br />Kotdwar, Uttarakhand 500001</span></div>
+            <div className="contact-detail-copy"><strong>Registered office</strong><span>Tema Industries Pvt. Ltd.<br />Kotdwar, Uttarakhand 246149</span></div>
           </div>
           <div className="contact-hours"><strong>Business hours</strong><span>Mon - Fri <b>9:00 AM - 6:00 PM</b></span><span>Saturday <b>10:00 AM - 5:00 PM</b></span><span>Sunday <b>Closed</b></span></div>
           <div className="contact-social-icons" aria-label="Social media">
@@ -48,7 +71,18 @@ export default function ContactPage() {
           </div>
         </aside>
 
-        <form className="contact-page-form" onSubmit={handleSubmit}>
+        <form
+          className="contact-page-form"
+          name="contact"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+          onSubmit={handleSubmit}
+        >
+          <input type="hidden" name="form-name" value="contact" />
+          <div className="contact-honeypot" hidden aria-hidden="true">
+            <label>Leave this field empty<input name="bot-field" tabIndex="-1" autoComplete="off" /></label>
+          </div>
           <div className="contact-form-row">
             <label>Name *<input required name="name" placeholder="Your name" /></label>
             <label>Company<input name="company" placeholder="Your company" /></label>
@@ -61,8 +95,15 @@ export default function ContactPage() {
           <label>Message *<textarea required name="message" rows="6" placeholder="Tell us about your volumes, requirements or any other query you have..." /></label>
           <div className="contact-form-footer">
             <small><img src={privacyIcon} alt="" />Your information is kept private and never shared.</small>
-            <button className="contact-submit" type="submit"><img src={sendIcon} alt="" />{submitted ? "Message sent" : "Send Message"}</button>
+            <button className="contact-submit" type="submit" disabled={submissionState === "submitting"}>
+              <img src={sendIcon} alt="" />
+              {submissionState === "submitting" ? "Sending..." : submissionState === "success" ? "Message sent" : "Send Message"}
+            </button>
           </div>
+          <p className="contact-form-status" role="status" aria-live="polite">
+            {submissionState === "success" && "Thanks for reaching out. Your message has been sent."}
+            {submissionState === "error" && "We couldn't send your message. Please try again or contact us by email."}
+          </p>
         </form>
       </section>
 
@@ -74,7 +115,7 @@ export default function ContactPage() {
             title="Map of Kotdwar, Uttarakhand"
             src="https://www.google.com/maps?q=Kotdwar%2C%20Uttarakhand&output=embed"
             loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
+            referrerPolicy="strict-origin-when-cross-origin"
           />
         </div>
       </section>

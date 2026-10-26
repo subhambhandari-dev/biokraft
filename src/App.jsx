@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { Component, lazy, Suspense, useEffect, useRef, useState } from 'react'
 import './App.css'
 import biokraftLogo from './assets/biokraft-logo.svg'
 import homeHeroImage from './assets/home-hero.webp'
@@ -134,6 +134,39 @@ const faqs = [
 ]
 
 const pageHashes = ['#about-page', '#products-page', '#contact-page']
+const pageTitles = {
+  '#about-page': 'About BioKraft | Sustainable Sugarcane Tableware',
+  '#products-page': 'Products | BioKraft Sustainable Tableware',
+  '#contact-page': 'Contact BioKraft | Bulk Tableware Enquiries',
+}
+
+class PageErrorBoundary extends Component {
+  state = { hasError: false }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Unable to render the requested page.', error, errorInfo)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <section className="page-error" role="alert">
+          <h1>This page couldn't load.</h1>
+          <p>Please check your connection and try again.</p>
+          <button className="dark-button" type="button" onClick={() => window.location.reload()}>
+            Reload page
+          </button>
+        </section>
+      )
+    }
+
+    return this.props.children
+  }
+}
 
 function Arrow() {
   return <img className="arrow-icon" src={arrowRightUpIcon} alt="" />
@@ -154,10 +187,61 @@ function SectionHeading({ label, children }) {
 function Header({ page }) {
   const activePage = page || '#top'
   const [menuOpen, setMenuOpen] = useState(false)
+  const menuToggleRef = useRef(null)
+  const drawerCloseRef = useRef(null)
+  const navigationRef = useRef(null)
+
+  useEffect(() => {
+    if (!menuOpen) return undefined
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const focusTimer = window.setTimeout(() => drawerCloseRef.current?.focus(), 0)
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setMenuOpen(false)
+        menuToggleRef.current?.focus()
+        return
+      }
+
+      if (event.key === 'Tab') {
+        const navigation = navigationRef.current
+        const focusableElements = navigation?.querySelectorAll('a[href], button:not(:disabled)')
+        if (!focusableElements?.length) return
+
+        const firstElement = focusableElements[0]
+        const lastElement = focusableElements[focusableElements.length - 1]
+
+        if (!navigation.contains(document.activeElement)) {
+          event.preventDefault()
+          const target = event.shiftKey ? lastElement : firstElement
+          target.focus()
+          return
+        }
+
+        if (event.shiftKey && document.activeElement === firstElement) {
+          event.preventDefault()
+          lastElement.focus()
+        } else if (!event.shiftKey && document.activeElement === lastElement) {
+          event.preventDefault()
+          firstElement.focus()
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      window.clearTimeout(focusTimer)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [menuOpen])
 
   return <header className="header">
     <a className="logo" href="#top" aria-label="BioKraft home"><img src={biokraftLogo} alt="" /></a>
     <button
+      ref={menuToggleRef}
       className="menu-toggle"
       type="button"
       aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
@@ -169,10 +253,50 @@ function Header({ page }) {
       <span />
       <span />
     </button>
-    <nav id="main-navigation" className={menuOpen ? 'open' : ''} aria-label="Main navigation" onClick={() => setMenuOpen(false)}>
-      <a className={activePage === '#top' ? 'active' : ''} href="#top">Home</a>
-      <a className={activePage === '#about-page' ? 'active' : ''} href="#about-page">About</a>
-      <a className={activePage === '#products-page' ? 'active' : ''} href="#products-page">Products</a>
+    <button
+      className={menuOpen ? 'nav-backdrop open' : 'nav-backdrop'}
+      type="button"
+      aria-label="Dismiss navigation drawer"
+      tabIndex={-1}
+      onClick={() => {
+        setMenuOpen(false)
+        menuToggleRef.current?.focus()
+      }}
+    />
+    <nav
+      ref={navigationRef}
+      id="main-navigation"
+      className={menuOpen ? 'open' : ''}
+      aria-label="Main navigation"
+      onClick={(event) => {
+        if (event.target.closest('a')) {
+          setMenuOpen(false)
+          menuToggleRef.current?.focus()
+        }
+      }}
+    >
+      <div className="drawer-heading">
+        <div className="drawer-brand">
+          <span className="drawer-eyebrow">Explore</span>
+          <span className="drawer-brand-name">BioKraft</span>
+        </div>
+        <button
+          ref={drawerCloseRef}
+          className="drawer-close"
+          type="button"
+          aria-label="Close navigation menu"
+          onClick={() => {
+            setMenuOpen(false)
+            menuToggleRef.current?.focus()
+          }}
+        >
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+        </button>
+      </div>
+      <a className={activePage === '#top' ? 'active drawer-link' : 'drawer-link'} aria-current={activePage === '#top' ? 'page' : undefined} href="#top">Home</a>
+      <a className={activePage === '#about-page' ? 'active drawer-link' : 'drawer-link'} aria-current={activePage === '#about-page' ? 'page' : undefined} href="#about-page">About</a>
+      <a className={activePage === '#products-page' ? 'active drawer-link' : 'drawer-link'} aria-current={activePage === '#products-page' ? 'page' : undefined} href="#products-page">Products</a>
       <Button variant="contact" href="#contact-page">Contact Us</Button>
     </nav>
   </header>
@@ -215,7 +339,7 @@ function About() {
       <p className="kicker">About</p>
       <h2>Powered by Nature<br />Driven by Innovation</h2>
       <p>Every year, millions of tonnes of sugarcane bagasse are burned or discarded across India, while billions of single-use plastic food containers end up in landfills. BioKraft was created to bridge these two challenges through sustainable manufacturing, turning agricultural residue into the food packaging that food service runs on.</p>
-      <Button>Know More</Button>
+      <Button href="#about-page">Know More</Button>
     </div>
   </section>
 }
@@ -261,8 +385,24 @@ function FAQ() {
 
 function Footer() {
   const columns = [
-    { title: 'Navigate', links: ['Home', 'About', 'Products', 'Contact'] },
-    { title: 'Products', links: ['Plates', 'Bowls', 'Compartment trays', 'Cups & Clamshell box'] },
+    {
+      title: 'Navigate',
+      links: [
+        { label: 'Home', href: '#top' },
+        { label: 'About', href: '#about-page' },
+        { label: 'Products', href: '#products-page' },
+        { label: 'Contact', href: '#contact-page' },
+      ],
+    },
+    {
+      title: 'Products',
+      links: [
+        { label: 'Plates', href: '#products-page' },
+        { label: 'Bowls', href: '#products-page' },
+        { label: 'Compartment trays', href: '#products-page' },
+        { label: 'Cups & Clamshell box', href: '#products-page' },
+      ],
+    },
   ]
 
   return <footer id="contact">
@@ -270,8 +410,8 @@ function Footer() {
       <a className="logo" href="#top" aria-label="BioKraft home"><img src={biokraftLogo} alt="" /></a>
       <p>Tema Industries Pvt. Ltd.</p>
     </div>
-    {columns.map(({ title, links }) => <div className="footer-column" key={title}><h4>{title}</h4>{links.map((label) => <span key={label}>{label}</span>)}</div>)}
-    <div className="footer-contact"><h4>Contact</h4><p>temaindustries.ltd@gmail.com</p><p>+91 8939099779</p><p>Kotdwar, Uttarakhand</p></div>
+    {columns.map(({ title, links }) => <div className="footer-column" key={title}><h4>{title}</h4>{links.map(({ label, href }) => <a href={href} key={label}>{label}</a>)}</div>)}
+    <div className="footer-contact"><h4>Contact</h4><a href="mailto:temaindustries.ltd@gmail.com">temaindustries.ltd@gmail.com</a><a href="tel:+918939099779">+91 8939099779</a><p>Kotdwar, Uttarakhand</p></div>
   </footer>
 }
 
@@ -288,9 +428,22 @@ function App() {
     if (pageHashes.includes(page)) window.scrollTo(0, 0)
   }, [page])
 
+  useEffect(() => {
+    document.title = pageTitles[page] || 'BioKraft | Sustainable Sugarcane Tableware'
+  }, [page])
+
   const pageContent = page === '#about-page' ? <AboutPage /> : page === '#products-page' ? <ProductsPage /> : page === '#contact-page' ? <ContactPage /> : <><Hero /><Benefits /><Industries /><About /><WhyChooseUs /><SwitchCallout /><Products /><AtAGlance /><FAQ /></>
 
-  return <main><Header page={page} /><Suspense fallback={null}>{pageContent}</Suspense><Footer /></main>
+  return <>
+    <a className="skip-link" href="#main-content">Skip to content</a>
+    <Header page={page} />
+    <main id="main-content">
+      <PageErrorBoundary>
+        <Suspense fallback={<p className="page-loading" role="status">Loading page...</p>}>{pageContent}</Suspense>
+      </PageErrorBoundary>
+    </main>
+    <Footer />
+  </>
 }
 
 export default App

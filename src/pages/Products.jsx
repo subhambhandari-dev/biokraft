@@ -279,7 +279,9 @@ export default function ProductsPage() {
         <div>
           {categories.map((category) => (
             <button
+              type="button"
               className={activeCategory === category ? "active" : ""}
+              aria-pressed={activeCategory === category}
               key={category}
               onClick={() => setActiveCategory(category)}
             >
@@ -287,7 +289,7 @@ export default function ProductsPage() {
             </button>
           ))}
         </div>
-        <span>
+        <span aria-live="polite" aria-atomic="true">
           {visibleProducts.length} Products
         </span>
       </section>

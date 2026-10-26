@@ -79,6 +79,10 @@ main {
   align-items: center;
   gap: 34px;
 }
+.drawer-close,
+.nav-backdrop {
+  display: none;
+}
 .menu-toggle {
   display: none;
 }
@@ -599,54 +603,144 @@ footer .footer-contact p {
   .menu-toggle[aria-expanded="true"] span:last-child {
     transform: translateY(-7px) rotate(-45deg);
   }
-  .header nav {
-    box-sizing: border-box;
-    position: absolute;
-    top: calc(100% - 2px);
-    right: 6vw;
-    display: flex;
-    width: min(320px, calc(100vw - 32px));
-    padding: 12px;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 5px;
-    border: 1px solid rgba(4, 81, 55, 0.1);
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.97);
-    box-shadow: 0 18px 44px rgba(0, 40, 25, 0.18);
-    backdrop-filter: blur(16px);
+  .nav-backdrop {
+    display: block;
+    position: fixed;
+    z-index: 9;
+    inset: 0;
+    border: 0;
+    background: rgba(0, 28, 19, 0.48);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform: translateY(-8px) scale(0.98);
-    transform-origin: top right;
-    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+    transition: opacity 220ms ease, visibility 220ms ease;
+  }
+  .nav-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .header nav {
+    box-sizing: border-box;
+    position: fixed;
+    z-index: 11;
+    inset: 0 0 0 auto;
+    display: flex;
+    width: min(360px, 88vw);
+    height: 100vh;
+    height: 100dvh;
+    padding: 26px 22px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    border: 0;
+    border-radius: 0;
+    background:
+      radial-gradient(ellipse at 100% 0, rgba(224, 234, 229, 0.72), transparent 42%),
+      #fcfcfc;
+    box-shadow: -18px 0 48px rgba(0, 40, 25, 0.2);
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(100%);
+    transition: opacity 220ms ease, transform 220ms ease, visibility 220ms ease;
   }
   .header nav.open {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
-    transform: translateY(0) scale(1);
+    transform: translateX(0);
+  }
+  .drawer-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin: 0 0 30px;
+    padding: 8px 0 22px;
+    border-bottom: 1px solid #dfe9e4;
+  }
+  .drawer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+  }
+  .drawer-eyebrow {
+    display: block;
+    color: #a57620;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .drawer-brand-name {
+    color: #023625;
+    font: 700 23px/1 Avenir, "Avenir Next", sans-serif;
+    letter-spacing: -0.8px;
+  }
+  .drawer-close {
+    position: relative;
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid #d4e4da;
+    border-radius: 14px;
+    color: #27684e;
+    background: #e7f0ea;
+    box-shadow: 0 4px 12px rgba(0, 61, 43, 0.09);
+    cursor: pointer;
+    transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+  }
+  .drawer-close:hover {
+    border-color: #c7922b;
+    color: #fff;
+    background: #c7922b;
+    transform: rotate(6deg);
+  }
+  .drawer-close:focus-visible {
+    outline: 2px solid #c7922b;
+    outline-offset: 3px;
+  }
+  .drawer-close span {
+    position: absolute;
+    width: 17px;
+    height: 1.5px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+  .drawer-close span:first-child {
+    transform: rotate(45deg);
+  }
+  .drawer-close span:last-child {
+    transform: rotate(-45deg);
   }
   .header nav a {
-    padding: 13px 14px;
-    border-radius: 11px;
-    font-size: 17px;
-    font-weight: 600;
-    transition: color 160ms ease, background-color 160ms ease;
+    padding: 16px 12px;
+    border-bottom: 1px solid #e5ece8;
+    border-radius: 0;
+    color: #023625;
+    font: 500 24px/1.2 "DM Serif Display", serif;
+    transition: color 160ms ease, background-color 160ms ease, padding 160ms ease;
   }
   .header nav a:not(.contact-button):hover,
   .header nav a:not(.contact-button).active {
     color: #045137;
-    background: #edf5ef;
+    background: rgba(224, 234, 229, 0.58);
+    padding-left: 18px;
     text-decoration: none;
   }
   .header nav .contact-button {
     justify-content: center;
-    margin-top: 6px;
+    margin-top: 24px;
     padding: 14px 18px;
-    border-radius: 11px;
+    border-radius: 8px;
     background: #c7922b;
+    font: 600 16px/1.2 Avenir, "Avenir Next", sans-serif;
   }
   .header nav .contact-button .arrow-icon {
     width: 22px;
@@ -655,7 +749,8 @@ footer .footer-contact p {
   @media (prefers-reduced-motion: reduce) {
     .menu-toggle,
     .menu-toggle span,
-    .header nav {
+    .header nav,
+    .nav-backdrop {
       transition: none;
     }
   }
@@ -755,9 +850,7 @@ footer .footer-contact p {
     display: block;
   }
   .faq-images {
-    margin-top: 40px;
-    width: min(100%, 420px);
-    justify-self: center;
+    display: none;
   }
   .faq-image {
     height: auto;
@@ -2127,4 +2220,71 @@ button,
 .catalogue-enquire,
 .about-page-partner a {
   font-family: Avenir, "Avenir Next", sans-serif;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 100;
+  padding: 12px 16px;
+  border-radius: 6px;
+  color: #fff;
+  background: #023625;
+}
+.skip-link:focus {
+  top: 16px;
+}
+.page-loading {
+  min-height: 50vh;
+  display: grid;
+  place-items: center;
+  margin: 0;
+}
+.page-error {
+  min-height: 50vh;
+  padding: 48px 7vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+.page-error h1 {
+  margin: 0 0 12px;
+  color: #023625;
+  font: 600 clamp(32px, 4vw, 48px)/1.15 "DM Serif Display", serif;
+}
+.page-error p {
+  margin: 0 0 20px;
+}
+.footer-column a:hover,
+.footer-contact a:hover {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.contact-honeypot {
+  position: absolute;
+  left: -10000px;
+}
+.contact-form-status {
+  min-height: 1.5em;
+  margin: 14px 0 0;
+  color: #07553b;
+  font-size: 14px;
+}
+.contact-submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
